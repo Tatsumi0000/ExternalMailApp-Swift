@@ -11,15 +11,14 @@ struct ExternalMailApp {
     
     let email: String
     let subject: String
-    let body: String
+    var body: String = ""
     
     /// initializer
     /// - Parameters:
     ///   - email: To email
     ///   - subject: Email title
     ///   - body: Body
-    ///   - bodyReplaceRN: Which setting replace line breaks(/n with /r/n) in body text
-    init(email: String, subject: String, body: String, bodyReplaceRN: Bool = false) {
+    init(email: String, subject: String, body: String) {
         self.email = email
         self.subject = subject
         self.body = body
@@ -31,5 +30,21 @@ struct ExternalMailApp {
     func replaceBody(body: String) -> String {
         return body.replacingOccurrences(of: "\n", with: "\r\n")
     }
-
+    
+    //TODO: 次にやることリスト
+    /// - 1. エスケープ処理をするメソッドの追加
+    /// - 2. エスケープ処理した文字列をURLに合体するメソッドの追加
+    /// - 3.
+    ///
+    ///
+    
+    /// <#Description#>
+    /// - Parameter ReplaceBodyRN: Which setting replace line breaks(/n with /r/n) in body text
+    func generateOpenURL(ReplaceBodyRN: Bool = false) {
+        let body = ReplaceBodyRN ? self.replaceBody(body: self.body) : self.body
+    }
+    
+    func getOpenURL(bodyReplaceRN: Bool = false) -> URL {
+        return URL()
+    }
 }
