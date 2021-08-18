@@ -9,42 +9,40 @@ import Foundation
 struct ExternalMailApp {
     var text = "Hello, World!"
     
-    let email: String
+    let address: String
     let subject: String
-    var body: String = ""
+    var body: String
     
     /// initializer
     /// - Parameters:
-    ///   - email: To email
+    ///   - address: To email
     ///   - subject: Email title
     ///   - body: Body
-    init(email: String, subject: String, body: String) {
-        self.email = email
-        self.subject = subject
-        self.body = body
+    init(address: String?, subject: String?, body: String?) {
+        self.address = address?.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+        self.subject = subject?.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+        self.body = body ?? ""
     }
     
     /// Replace line breaks(/n with /r/n) in body text
     /// - Parameter body: The string to be replaced
     /// - Returns: Replaced String
-    func replaceBody(body: String) -> String {
-        return body.replacingOccurrences(of: "\n", with: "\r\n")
+    private func replaceBodyRN(body: String) -> String {
+        let pattern = "\\n"
+        let regex = try! NSRegularExpression(pattern: pattern, options: [])
+        let replacedBody = regex.stringByReplacingMatches(in: body, options: [], range: NSRange(0..<body.count), withTemplate: "\r\n")
+        return replacedBody
     }
     
-    //TODO: 次にやることリスト
-    /// - 1. エスケープ処理をするメソッドの追加
-    /// - 2. エスケープ処理した文字列をURLに合体するメソッドの追加
-    /// - 3.
-    ///
-    ///
-    
-    /// <#Description#>
-    /// - Parameter ReplaceBodyRN: Which setting replace line breaks(/n with /r/n) in body text
-    func generateOpenURL(ReplaceBodyRN: Bool = false) {
-        let body = ReplaceBodyRN ? self.replaceBody(body: self.body) : self.body
-    }
-    
-    func getOpenURL(bodyReplaceRN: Bool = false) -> URL {
-        return URL()
+    /// get mail open URL
+    /// - Parameter replaceBodyRN: Which setting replace line breaks(/n with /r/n) in body text
+    public func getOpenURL(bodyReplaceRN: Bool) -> URL {
+        let body: String
+        if bodyReplaceRN {
+            body = self.replaceBodyRN(body: self.body).addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+            return URL(string: "mailto:\(self.address)?subject=\(self.subject)&body=\(body)")!
+        }
+        body = self.body.addingPercentEncoding(withAllowedCharacters: .alphanumerics)!
+        return URL(string: "mailto:\(self.address)?subject=\(self.subject)&body=\(body)")!
     }
 }
